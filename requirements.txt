@@ -1,0 +1,6 @@
+networkx==2.6.2
+netgraph==4.0.4
+python-louvain==0.15
+palettable==3.3.0
+imageio==2.9.0
+fitter
