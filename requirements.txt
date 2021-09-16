@@ -7,3 +7,5 @@ fitter
 numpy
 scipy
 matplotlib
+seaborn
+statsmodels
