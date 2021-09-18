@@ -1,4 +1,6 @@
 import collections
+import matplotlib as mpl
+import string
 
 def add_legend(fig, axes, on_fig=False):
     legend_x_offset = .025
@@ -41,3 +43,33 @@ def set_axis(ax, xlabel, ylabel, log_scale=(False,False)):
     ax.set(xlabel=f"{xlabel} (log)", ylabel=ylabel, xscale="log")
   elif log_scale[1]: #semilog on y
     ax.set(xlabel=xlabel, ylabel=f"{ylabel} (log)", yscale="log")
+
+
+def setup_figure_for_export(fig):
+    # no title since we'll add a caption, but add a panel with letter 
+
+    if len(fig.axes) > 1:
+        for ax, panel_label in zip(fig.axes, string.ascii_uppercase):
+            ax.set_title("")
+            ax.text(0.97, 1., panel_label, transform=ax.transAxes,
+                    fontsize=16, fontweight='bold', va='top')
+    else:
+        fig.axes[0].set_title("")
+    
+    return fig
+
+def export_figures(base_dir, figures_dict, formatting_exceptions=None, formats=["pdf", "png"]):
+    for name, fig in figures_dict.items():
+        for file_format in formats:
+            file_path = base_dir/ f"{name}.{file_format}"
+            print(f"saving {file_path}")
+            fig.suptitle("")
+            if name not in formatting_exceptions:
+                fig = setup_figure_for_export(fig)
+            
+            # fix for legends not show when is at figure level
+            legend = [child for child in fig.get_children() if isinstance(child, mpl.legend.Legend)]
+            if legend:
+              fig.savefig(file_path, bbox_extra_artists=legend, bbox_inches='tight')
+            else:
+              fig.savefig(file_path, bbox_inches='tight')
